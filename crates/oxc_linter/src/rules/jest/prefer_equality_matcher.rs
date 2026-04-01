@@ -104,17 +104,21 @@ impl PreferEqualityMatcher {
         let Some(argument) = expect_call_expr.arguments.first() else {
             return;
         };
+
         let Argument::BinaryExpression(binary_expr) = argument else {
             return;
         };
+
         if binary_expr.operator != BinaryOperator::StrictEquality
             && binary_expr.operator != BinaryOperator::StrictInequality
         {
             return;
         }
+
         let Some(matcher) = jest_fn_call.matcher() else {
             return;
         };
+
         if !is_equality_matcher(matcher) {
             return;
         }
@@ -136,7 +140,7 @@ impl PreferEqualityMatcher {
             matcher_arg_value.value
         }) == has_not_modifier;
 
-        let fixer = RuleFixer::new(crate::fixer::FixKind::Suggestion, ctx);
+        let fixer = RuleFixer::new(FixKind::Suggestion, ctx);
         let suggestions = ["toBe", "toEqual", "toStrictEqual"].into_iter().map(|eq_matcher| {
             // Preserve trailing commas: expect(a === b,).toBe(true,) -> expect(a,).toBe(b,)
             let call_span_end =
