@@ -252,6 +252,7 @@ pub use crate::rules::jest::prefer_jest_mocked::PreferJestMocked as JestPreferJe
 pub use crate::rules::jest::prefer_lowercase_title::PreferLowercaseTitle as JestPreferLowercaseTitle;
 pub use crate::rules::jest::prefer_mock_promise_shorthand::PreferMockPromiseShorthand as JestPreferMockPromiseShorthand;
 pub use crate::rules::jest::prefer_mock_return_shorthand::PreferMockReturnShorthand as JestPreferMockReturnShorthand;
+pub use crate::rules::jest::prefer_snapshot_hint::PreferSnapshotHint as JestPreferSnapshotHint;
 pub use crate::rules::jest::prefer_spy_on::PreferSpyOn as JestPreferSpyOn;
 pub use crate::rules::jest::prefer_strict_equal::PreferStrictEqual as JestPreferStrictEqual;
 pub use crate::rules::jest::prefer_to_be::PreferToBe as JestPreferToBe;
@@ -675,6 +676,7 @@ pub use crate::rules::unicorn::require_module_specifiers::RequireModuleSpecifier
 pub use crate::rules::unicorn::require_number_to_fixed_digits_argument::RequireNumberToFixedDigitsArgument as UnicornRequireNumberToFixedDigitsArgument;
 pub use crate::rules::unicorn::require_post_message_target_origin::RequirePostMessageTargetOrigin as UnicornRequirePostMessageTargetOrigin;
 pub use crate::rules::unicorn::switch_case_braces::SwitchCaseBraces as UnicornSwitchCaseBraces;
+pub use crate::rules::unicorn::switch_case_break_position::SwitchCaseBreakPosition as UnicornSwitchCaseBreakPosition;
 pub use crate::rules::unicorn::text_encoding_identifier_case::TextEncodingIdentifierCase as UnicornTextEncodingIdentifierCase;
 pub use crate::rules::unicorn::throw_new_error::ThrowNewError as UnicornThrowNewError;
 pub use crate::rules::vitest::consistent_each_for::ConsistentEachFor as VitestConsistentEachFor;
@@ -1079,6 +1081,7 @@ pub enum RuleEnum {
     JestPreferLowercaseTitle(JestPreferLowercaseTitle),
     JestPreferMockPromiseShorthand(JestPreferMockPromiseShorthand),
     JestPreferMockReturnShorthand(JestPreferMockReturnShorthand),
+    JestPreferSnapshotHint(JestPreferSnapshotHint),
     JestPreferSpyOn(JestPreferSpyOn),
     JestPreferStrictEqual(JestPreferStrictEqual),
     JestPreferToBe(JestPreferToBe),
@@ -1276,6 +1279,7 @@ pub enum RuleEnum {
     UnicornRequireNumberToFixedDigitsArgument(UnicornRequireNumberToFixedDigitsArgument),
     UnicornRequirePostMessageTargetOrigin(UnicornRequirePostMessageTargetOrigin),
     UnicornSwitchCaseBraces(UnicornSwitchCaseBraces),
+    UnicornSwitchCaseBreakPosition(UnicornSwitchCaseBreakPosition),
     UnicornTextEncodingIdentifierCase(UnicornTextEncodingIdentifierCase),
     UnicornThrowNewError(UnicornThrowNewError),
     JsxA11YAltText(JsxA11YAltText),
@@ -1835,7 +1839,8 @@ const JEST_PREFER_JEST_MOCKED_ID: usize = JEST_PREFER_HOOKS_ON_TOP_ID + 1usize;
 const JEST_PREFER_LOWERCASE_TITLE_ID: usize = JEST_PREFER_JEST_MOCKED_ID + 1usize;
 const JEST_PREFER_MOCK_PROMISE_SHORTHAND_ID: usize = JEST_PREFER_LOWERCASE_TITLE_ID + 1usize;
 const JEST_PREFER_MOCK_RETURN_SHORTHAND_ID: usize = JEST_PREFER_MOCK_PROMISE_SHORTHAND_ID + 1usize;
-const JEST_PREFER_SPY_ON_ID: usize = JEST_PREFER_MOCK_RETURN_SHORTHAND_ID + 1usize;
+const JEST_PREFER_SNAPSHOT_HINT_ID: usize = JEST_PREFER_MOCK_RETURN_SHORTHAND_ID + 1usize;
+const JEST_PREFER_SPY_ON_ID: usize = JEST_PREFER_SNAPSHOT_HINT_ID + 1usize;
 const JEST_PREFER_STRICT_EQUAL_ID: usize = JEST_PREFER_SPY_ON_ID + 1usize;
 const JEST_PREFER_TO_BE_ID: usize = JEST_PREFER_STRICT_EQUAL_ID + 1usize;
 const JEST_PREFER_TO_CONTAIN_ID: usize = JEST_PREFER_TO_BE_ID + 1usize;
@@ -2059,7 +2064,9 @@ const UNICORN_REQUIRE_NUMBER_TO_FIXED_DIGITS_ARGUMENT_ID: usize =
 const UNICORN_REQUIRE_POST_MESSAGE_TARGET_ORIGIN_ID: usize =
     UNICORN_REQUIRE_NUMBER_TO_FIXED_DIGITS_ARGUMENT_ID + 1usize;
 const UNICORN_SWITCH_CASE_BRACES_ID: usize = UNICORN_REQUIRE_POST_MESSAGE_TARGET_ORIGIN_ID + 1usize;
-const UNICORN_TEXT_ENCODING_IDENTIFIER_CASE_ID: usize = UNICORN_SWITCH_CASE_BRACES_ID + 1usize;
+const UNICORN_SWITCH_CASE_BREAK_POSITION_ID: usize = UNICORN_SWITCH_CASE_BRACES_ID + 1usize;
+const UNICORN_TEXT_ENCODING_IDENTIFIER_CASE_ID: usize =
+    UNICORN_SWITCH_CASE_BREAK_POSITION_ID + 1usize;
 const UNICORN_THROW_NEW_ERROR_ID: usize = UNICORN_TEXT_ENCODING_IDENTIFIER_CASE_ID + 1usize;
 const JSX_A_11_Y_ALT_TEXT_ID: usize = UNICORN_THROW_NEW_ERROR_ID + 1usize;
 const JSX_A_11_Y_ANCHOR_AMBIGUOUS_TEXT_ID: usize = JSX_A_11_Y_ALT_TEXT_ID + 1usize;
@@ -2653,6 +2660,7 @@ impl RuleEnum {
             Self::JestPreferLowercaseTitle(_) => JEST_PREFER_LOWERCASE_TITLE_ID,
             Self::JestPreferMockPromiseShorthand(_) => JEST_PREFER_MOCK_PROMISE_SHORTHAND_ID,
             Self::JestPreferMockReturnShorthand(_) => JEST_PREFER_MOCK_RETURN_SHORTHAND_ID,
+            Self::JestPreferSnapshotHint(_) => JEST_PREFER_SNAPSHOT_HINT_ID,
             Self::JestPreferSpyOn(_) => JEST_PREFER_SPY_ON_ID,
             Self::JestPreferStrictEqual(_) => JEST_PREFER_STRICT_EQUAL_ID,
             Self::JestPreferToBe(_) => JEST_PREFER_TO_BE_ID,
@@ -2882,6 +2890,7 @@ impl RuleEnum {
                 UNICORN_REQUIRE_POST_MESSAGE_TARGET_ORIGIN_ID
             }
             Self::UnicornSwitchCaseBraces(_) => UNICORN_SWITCH_CASE_BRACES_ID,
+            Self::UnicornSwitchCaseBreakPosition(_) => UNICORN_SWITCH_CASE_BREAK_POSITION_ID,
             Self::UnicornTextEncodingIdentifierCase(_) => UNICORN_TEXT_ENCODING_IDENTIFIER_CASE_ID,
             Self::UnicornThrowNewError(_) => UNICORN_THROW_NEW_ERROR_ID,
             Self::JsxA11YAltText(_) => JSX_A_11_Y_ALT_TEXT_ID,
@@ -3469,6 +3478,7 @@ impl RuleEnum {
             Self::JestPreferLowercaseTitle(_) => JestPreferLowercaseTitle::NAME,
             Self::JestPreferMockPromiseShorthand(_) => JestPreferMockPromiseShorthand::NAME,
             Self::JestPreferMockReturnShorthand(_) => JestPreferMockReturnShorthand::NAME,
+            Self::JestPreferSnapshotHint(_) => JestPreferSnapshotHint::NAME,
             Self::JestPreferSpyOn(_) => JestPreferSpyOn::NAME,
             Self::JestPreferStrictEqual(_) => JestPreferStrictEqual::NAME,
             Self::JestPreferToBe(_) => JestPreferToBe::NAME,
@@ -3692,6 +3702,7 @@ impl RuleEnum {
                 UnicornRequirePostMessageTargetOrigin::NAME
             }
             Self::UnicornSwitchCaseBraces(_) => UnicornSwitchCaseBraces::NAME,
+            Self::UnicornSwitchCaseBreakPosition(_) => UnicornSwitchCaseBreakPosition::NAME,
             Self::UnicornTextEncodingIdentifierCase(_) => UnicornTextEncodingIdentifierCase::NAME,
             Self::UnicornThrowNewError(_) => UnicornThrowNewError::NAME,
             Self::JsxA11YAltText(_) => JsxA11YAltText::NAME,
@@ -4301,6 +4312,7 @@ impl RuleEnum {
             Self::JestPreferLowercaseTitle(_) => JestPreferLowercaseTitle::CATEGORY,
             Self::JestPreferMockPromiseShorthand(_) => JestPreferMockPromiseShorthand::CATEGORY,
             Self::JestPreferMockReturnShorthand(_) => JestPreferMockReturnShorthand::CATEGORY,
+            Self::JestPreferSnapshotHint(_) => JestPreferSnapshotHint::CATEGORY,
             Self::JestPreferSpyOn(_) => JestPreferSpyOn::CATEGORY,
             Self::JestPreferStrictEqual(_) => JestPreferStrictEqual::CATEGORY,
             Self::JestPreferToBe(_) => JestPreferToBe::CATEGORY,
@@ -4538,6 +4550,7 @@ impl RuleEnum {
                 UnicornRequirePostMessageTargetOrigin::CATEGORY
             }
             Self::UnicornSwitchCaseBraces(_) => UnicornSwitchCaseBraces::CATEGORY,
+            Self::UnicornSwitchCaseBreakPosition(_) => UnicornSwitchCaseBreakPosition::CATEGORY,
             Self::UnicornTextEncodingIdentifierCase(_) => {
                 UnicornTextEncodingIdentifierCase::CATEGORY
             }
@@ -5136,6 +5149,7 @@ impl RuleEnum {
             Self::JestPreferLowercaseTitle(_) => JestPreferLowercaseTitle::FIX,
             Self::JestPreferMockPromiseShorthand(_) => JestPreferMockPromiseShorthand::FIX,
             Self::JestPreferMockReturnShorthand(_) => JestPreferMockReturnShorthand::FIX,
+            Self::JestPreferSnapshotHint(_) => JestPreferSnapshotHint::FIX,
             Self::JestPreferSpyOn(_) => JestPreferSpyOn::FIX,
             Self::JestPreferStrictEqual(_) => JestPreferStrictEqual::FIX,
             Self::JestPreferToBe(_) => JestPreferToBe::FIX,
@@ -5359,6 +5373,7 @@ impl RuleEnum {
                 UnicornRequirePostMessageTargetOrigin::FIX
             }
             Self::UnicornSwitchCaseBraces(_) => UnicornSwitchCaseBraces::FIX,
+            Self::UnicornSwitchCaseBreakPosition(_) => UnicornSwitchCaseBreakPosition::FIX,
             Self::UnicornTextEncodingIdentifierCase(_) => UnicornTextEncodingIdentifierCase::FIX,
             Self::UnicornThrowNewError(_) => UnicornThrowNewError::FIX,
             Self::JsxA11YAltText(_) => JsxA11YAltText::FIX,
@@ -6039,6 +6054,7 @@ impl RuleEnum {
             Self::JestPreferMockReturnShorthand(_) => {
                 JestPreferMockReturnShorthand::documentation()
             }
+            Self::JestPreferSnapshotHint(_) => JestPreferSnapshotHint::documentation(),
             Self::JestPreferSpyOn(_) => JestPreferSpyOn::documentation(),
             Self::JestPreferStrictEqual(_) => JestPreferStrictEqual::documentation(),
             Self::JestPreferToBe(_) => JestPreferToBe::documentation(),
@@ -6332,6 +6348,9 @@ impl RuleEnum {
                 UnicornRequirePostMessageTargetOrigin::documentation()
             }
             Self::UnicornSwitchCaseBraces(_) => UnicornSwitchCaseBraces::documentation(),
+            Self::UnicornSwitchCaseBreakPosition(_) => {
+                UnicornSwitchCaseBreakPosition::documentation()
+            }
             Self::UnicornTextEncodingIdentifierCase(_) => {
                 UnicornTextEncodingIdentifierCase::documentation()
             }
@@ -7543,6 +7562,8 @@ impl RuleEnum {
                 JestPreferMockReturnShorthand::config_schema(generator)
                     .or_else(|| JestPreferMockReturnShorthand::schema(generator))
             }
+            Self::JestPreferSnapshotHint(_) => JestPreferSnapshotHint::config_schema(generator)
+                .or_else(|| JestPreferSnapshotHint::schema(generator)),
             Self::JestPreferSpyOn(_) => JestPreferSpyOn::config_schema(generator)
                 .or_else(|| JestPreferSpyOn::schema(generator)),
             Self::JestPreferStrictEqual(_) => JestPreferStrictEqual::config_schema(generator)
@@ -8127,6 +8148,10 @@ impl RuleEnum {
             }
             Self::UnicornSwitchCaseBraces(_) => UnicornSwitchCaseBraces::config_schema(generator)
                 .or_else(|| UnicornSwitchCaseBraces::schema(generator)),
+            Self::UnicornSwitchCaseBreakPosition(_) => {
+                UnicornSwitchCaseBreakPosition::config_schema(generator)
+                    .or_else(|| UnicornSwitchCaseBreakPosition::schema(generator))
+            }
             Self::UnicornTextEncodingIdentifierCase(_) => {
                 UnicornTextEncodingIdentifierCase::config_schema(generator)
                     .or_else(|| UnicornTextEncodingIdentifierCase::schema(generator))
@@ -8914,6 +8939,7 @@ impl RuleEnum {
             Self::JestPreferLowercaseTitle(_) => "jest",
             Self::JestPreferMockPromiseShorthand(_) => "jest",
             Self::JestPreferMockReturnShorthand(_) => "jest",
+            Self::JestPreferSnapshotHint(_) => "jest",
             Self::JestPreferSpyOn(_) => "jest",
             Self::JestPreferStrictEqual(_) => "jest",
             Self::JestPreferToBe(_) => "jest",
@@ -9111,6 +9137,7 @@ impl RuleEnum {
             Self::UnicornRequireNumberToFixedDigitsArgument(_) => "unicorn",
             Self::UnicornRequirePostMessageTargetOrigin(_) => "unicorn",
             Self::UnicornSwitchCaseBraces(_) => "unicorn",
+            Self::UnicornSwitchCaseBreakPosition(_) => "unicorn",
             Self::UnicornTextEncodingIdentifierCase(_) => "unicorn",
             Self::UnicornThrowNewError(_) => "unicorn",
             Self::JsxA11YAltText(_) => "jsx_a11y",
@@ -10417,6 +10444,9 @@ impl RuleEnum {
             Self::JestPreferMockReturnShorthand(_) => Ok(Self::JestPreferMockReturnShorthand(
                 JestPreferMockReturnShorthand::from_configuration(value)?,
             )),
+            Self::JestPreferSnapshotHint(_) => {
+                Ok(Self::JestPreferSnapshotHint(JestPreferSnapshotHint::from_configuration(value)?))
+            }
             Self::JestPreferSpyOn(_) => {
                 Ok(Self::JestPreferSpyOn(JestPreferSpyOn::from_configuration(value)?))
             }
@@ -11055,6 +11085,9 @@ impl RuleEnum {
             }
             Self::UnicornSwitchCaseBraces(_) => Ok(Self::UnicornSwitchCaseBraces(
                 UnicornSwitchCaseBraces::from_configuration(value)?,
+            )),
+            Self::UnicornSwitchCaseBreakPosition(_) => Ok(Self::UnicornSwitchCaseBreakPosition(
+                UnicornSwitchCaseBreakPosition::from_configuration(value)?,
             )),
             Self::UnicornTextEncodingIdentifierCase(_) => {
                 Ok(Self::UnicornTextEncodingIdentifierCase(
@@ -11907,6 +11940,7 @@ impl RuleEnum {
             Self::JestPreferLowercaseTitle(rule) => rule.to_configuration(),
             Self::JestPreferMockPromiseShorthand(rule) => rule.to_configuration(),
             Self::JestPreferMockReturnShorthand(rule) => rule.to_configuration(),
+            Self::JestPreferSnapshotHint(rule) => rule.to_configuration(),
             Self::JestPreferSpyOn(rule) => rule.to_configuration(),
             Self::JestPreferStrictEqual(rule) => rule.to_configuration(),
             Self::JestPreferToBe(rule) => rule.to_configuration(),
@@ -12104,6 +12138,7 @@ impl RuleEnum {
             Self::UnicornRequireNumberToFixedDigitsArgument(rule) => rule.to_configuration(),
             Self::UnicornRequirePostMessageTargetOrigin(rule) => rule.to_configuration(),
             Self::UnicornSwitchCaseBraces(rule) => rule.to_configuration(),
+            Self::UnicornSwitchCaseBreakPosition(rule) => rule.to_configuration(),
             Self::UnicornTextEncodingIdentifierCase(rule) => rule.to_configuration(),
             Self::UnicornThrowNewError(rule) => rule.to_configuration(),
             Self::JsxA11YAltText(rule) => rule.to_configuration(),
@@ -12621,6 +12656,7 @@ impl RuleEnum {
             Self::JestPreferLowercaseTitle(rule) => rule.run(node, ctx),
             Self::JestPreferMockPromiseShorthand(rule) => rule.run(node, ctx),
             Self::JestPreferMockReturnShorthand(rule) => rule.run(node, ctx),
+            Self::JestPreferSnapshotHint(rule) => rule.run(node, ctx),
             Self::JestPreferSpyOn(rule) => rule.run(node, ctx),
             Self::JestPreferStrictEqual(rule) => rule.run(node, ctx),
             Self::JestPreferToBe(rule) => rule.run(node, ctx),
@@ -12818,6 +12854,7 @@ impl RuleEnum {
             Self::UnicornRequireNumberToFixedDigitsArgument(rule) => rule.run(node, ctx),
             Self::UnicornRequirePostMessageTargetOrigin(rule) => rule.run(node, ctx),
             Self::UnicornSwitchCaseBraces(rule) => rule.run(node, ctx),
+            Self::UnicornSwitchCaseBreakPosition(rule) => rule.run(node, ctx),
             Self::UnicornTextEncodingIdentifierCase(rule) => rule.run(node, ctx),
             Self::UnicornThrowNewError(rule) => rule.run(node, ctx),
             Self::JsxA11YAltText(rule) => rule.run(node, ctx),
@@ -13333,6 +13370,7 @@ impl RuleEnum {
             Self::JestPreferLowercaseTitle(rule) => rule.run_once(ctx),
             Self::JestPreferMockPromiseShorthand(rule) => rule.run_once(ctx),
             Self::JestPreferMockReturnShorthand(rule) => rule.run_once(ctx),
+            Self::JestPreferSnapshotHint(rule) => rule.run_once(ctx),
             Self::JestPreferSpyOn(rule) => rule.run_once(ctx),
             Self::JestPreferStrictEqual(rule) => rule.run_once(ctx),
             Self::JestPreferToBe(rule) => rule.run_once(ctx),
@@ -13530,6 +13568,7 @@ impl RuleEnum {
             Self::UnicornRequireNumberToFixedDigitsArgument(rule) => rule.run_once(ctx),
             Self::UnicornRequirePostMessageTargetOrigin(rule) => rule.run_once(ctx),
             Self::UnicornSwitchCaseBraces(rule) => rule.run_once(ctx),
+            Self::UnicornSwitchCaseBreakPosition(rule) => rule.run_once(ctx),
             Self::UnicornTextEncodingIdentifierCase(rule) => rule.run_once(ctx),
             Self::UnicornThrowNewError(rule) => rule.run_once(ctx),
             Self::JsxA11YAltText(rule) => rule.run_once(ctx),
@@ -14113,6 +14152,7 @@ impl RuleEnum {
             Self::JestPreferLowercaseTitle(rule) => rule.run_on_jest_node(jest_node, ctx),
             Self::JestPreferMockPromiseShorthand(rule) => rule.run_on_jest_node(jest_node, ctx),
             Self::JestPreferMockReturnShorthand(rule) => rule.run_on_jest_node(jest_node, ctx),
+            Self::JestPreferSnapshotHint(rule) => rule.run_on_jest_node(jest_node, ctx),
             Self::JestPreferSpyOn(rule) => rule.run_on_jest_node(jest_node, ctx),
             Self::JestPreferStrictEqual(rule) => rule.run_on_jest_node(jest_node, ctx),
             Self::JestPreferToBe(rule) => rule.run_on_jest_node(jest_node, ctx),
@@ -14336,6 +14376,7 @@ impl RuleEnum {
                 rule.run_on_jest_node(jest_node, ctx)
             }
             Self::UnicornSwitchCaseBraces(rule) => rule.run_on_jest_node(jest_node, ctx),
+            Self::UnicornSwitchCaseBreakPosition(rule) => rule.run_on_jest_node(jest_node, ctx),
             Self::UnicornTextEncodingIdentifierCase(rule) => rule.run_on_jest_node(jest_node, ctx),
             Self::UnicornThrowNewError(rule) => rule.run_on_jest_node(jest_node, ctx),
             Self::JsxA11YAltText(rule) => rule.run_on_jest_node(jest_node, ctx),
@@ -14857,6 +14898,7 @@ impl RuleEnum {
             Self::JestPreferLowercaseTitle(rule) => rule.should_run(ctx),
             Self::JestPreferMockPromiseShorthand(rule) => rule.should_run(ctx),
             Self::JestPreferMockReturnShorthand(rule) => rule.should_run(ctx),
+            Self::JestPreferSnapshotHint(rule) => rule.should_run(ctx),
             Self::JestPreferSpyOn(rule) => rule.should_run(ctx),
             Self::JestPreferStrictEqual(rule) => rule.should_run(ctx),
             Self::JestPreferToBe(rule) => rule.should_run(ctx),
@@ -15054,6 +15096,7 @@ impl RuleEnum {
             Self::UnicornRequireNumberToFixedDigitsArgument(rule) => rule.should_run(ctx),
             Self::UnicornRequirePostMessageTargetOrigin(rule) => rule.should_run(ctx),
             Self::UnicornSwitchCaseBraces(rule) => rule.should_run(ctx),
+            Self::UnicornSwitchCaseBreakPosition(rule) => rule.should_run(ctx),
             Self::UnicornTextEncodingIdentifierCase(rule) => rule.should_run(ctx),
             Self::UnicornThrowNewError(rule) => rule.should_run(ctx),
             Self::JsxA11YAltText(rule) => rule.should_run(ctx),
@@ -15727,6 +15770,7 @@ impl RuleEnum {
             Self::JestPreferMockReturnShorthand(_) => {
                 JestPreferMockReturnShorthand::IS_TSGOLINT_RULE
             }
+            Self::JestPreferSnapshotHint(_) => JestPreferSnapshotHint::IS_TSGOLINT_RULE,
             Self::JestPreferSpyOn(_) => JestPreferSpyOn::IS_TSGOLINT_RULE,
             Self::JestPreferStrictEqual(_) => JestPreferStrictEqual::IS_TSGOLINT_RULE,
             Self::JestPreferToBe(_) => JestPreferToBe::IS_TSGOLINT_RULE,
@@ -16020,6 +16064,9 @@ impl RuleEnum {
                 UnicornRequirePostMessageTargetOrigin::IS_TSGOLINT_RULE
             }
             Self::UnicornSwitchCaseBraces(_) => UnicornSwitchCaseBraces::IS_TSGOLINT_RULE,
+            Self::UnicornSwitchCaseBreakPosition(_) => {
+                UnicornSwitchCaseBreakPosition::IS_TSGOLINT_RULE
+            }
             Self::UnicornTextEncodingIdentifierCase(_) => {
                 UnicornTextEncodingIdentifierCase::IS_TSGOLINT_RULE
             }
@@ -16686,6 +16733,7 @@ impl RuleEnum {
             Self::JestPreferLowercaseTitle(_) => JestPreferLowercaseTitle::HAS_CONFIG,
             Self::JestPreferMockPromiseShorthand(_) => JestPreferMockPromiseShorthand::HAS_CONFIG,
             Self::JestPreferMockReturnShorthand(_) => JestPreferMockReturnShorthand::HAS_CONFIG,
+            Self::JestPreferSnapshotHint(_) => JestPreferSnapshotHint::HAS_CONFIG,
             Self::JestPreferSpyOn(_) => JestPreferSpyOn::HAS_CONFIG,
             Self::JestPreferStrictEqual(_) => JestPreferStrictEqual::HAS_CONFIG,
             Self::JestPreferToBe(_) => JestPreferToBe::HAS_CONFIG,
@@ -16933,6 +16981,7 @@ impl RuleEnum {
                 UnicornRequirePostMessageTargetOrigin::HAS_CONFIG
             }
             Self::UnicornSwitchCaseBraces(_) => UnicornSwitchCaseBraces::HAS_CONFIG,
+            Self::UnicornSwitchCaseBreakPosition(_) => UnicornSwitchCaseBreakPosition::HAS_CONFIG,
             Self::UnicornTextEncodingIdentifierCase(_) => {
                 UnicornTextEncodingIdentifierCase::HAS_CONFIG
             }
@@ -17468,6 +17517,7 @@ impl RuleEnum {
             Self::JestPreferLowercaseTitle(rule) => rule.types_info(),
             Self::JestPreferMockPromiseShorthand(rule) => rule.types_info(),
             Self::JestPreferMockReturnShorthand(rule) => rule.types_info(),
+            Self::JestPreferSnapshotHint(rule) => rule.types_info(),
             Self::JestPreferSpyOn(rule) => rule.types_info(),
             Self::JestPreferStrictEqual(rule) => rule.types_info(),
             Self::JestPreferToBe(rule) => rule.types_info(),
@@ -17665,6 +17715,7 @@ impl RuleEnum {
             Self::UnicornRequireNumberToFixedDigitsArgument(rule) => rule.types_info(),
             Self::UnicornRequirePostMessageTargetOrigin(rule) => rule.types_info(),
             Self::UnicornSwitchCaseBraces(rule) => rule.types_info(),
+            Self::UnicornSwitchCaseBreakPosition(rule) => rule.types_info(),
             Self::UnicornTextEncodingIdentifierCase(rule) => rule.types_info(),
             Self::UnicornThrowNewError(rule) => rule.types_info(),
             Self::JsxA11YAltText(rule) => rule.types_info(),
@@ -18180,6 +18231,7 @@ impl RuleEnum {
             Self::JestPreferLowercaseTitle(rule) => rule.run_info(),
             Self::JestPreferMockPromiseShorthand(rule) => rule.run_info(),
             Self::JestPreferMockReturnShorthand(rule) => rule.run_info(),
+            Self::JestPreferSnapshotHint(rule) => rule.run_info(),
             Self::JestPreferSpyOn(rule) => rule.run_info(),
             Self::JestPreferStrictEqual(rule) => rule.run_info(),
             Self::JestPreferToBe(rule) => rule.run_info(),
@@ -18377,6 +18429,7 @@ impl RuleEnum {
             Self::UnicornRequireNumberToFixedDigitsArgument(rule) => rule.run_info(),
             Self::UnicornRequirePostMessageTargetOrigin(rule) => rule.run_info(),
             Self::UnicornSwitchCaseBraces(rule) => rule.run_info(),
+            Self::UnicornSwitchCaseBreakPosition(rule) => rule.run_info(),
             Self::UnicornTextEncodingIdentifierCase(rule) => rule.run_info(),
             Self::UnicornThrowNewError(rule) => rule.run_info(),
             Self::JsxA11YAltText(rule) => rule.run_info(),
@@ -18978,6 +19031,7 @@ pub static RULES: std::sync::LazyLock<Vec<RuleEnum>> = std::sync::LazyLock::new(
         RuleEnum::JestPreferLowercaseTitle(JestPreferLowercaseTitle::default()),
         RuleEnum::JestPreferMockPromiseShorthand(JestPreferMockPromiseShorthand::default()),
         RuleEnum::JestPreferMockReturnShorthand(JestPreferMockReturnShorthand::default()),
+        RuleEnum::JestPreferSnapshotHint(JestPreferSnapshotHint::default()),
         RuleEnum::JestPreferSpyOn(JestPreferSpyOn::default()),
         RuleEnum::JestPreferStrictEqual(JestPreferStrictEqual::default()),
         RuleEnum::JestPreferToBe(JestPreferToBe::default()),
@@ -19201,6 +19255,7 @@ pub static RULES: std::sync::LazyLock<Vec<RuleEnum>> = std::sync::LazyLock::new(
             UnicornRequirePostMessageTargetOrigin::default(),
         ),
         RuleEnum::UnicornSwitchCaseBraces(UnicornSwitchCaseBraces::default()),
+        RuleEnum::UnicornSwitchCaseBreakPosition(UnicornSwitchCaseBreakPosition::default()),
         RuleEnum::UnicornTextEncodingIdentifierCase(UnicornTextEncodingIdentifierCase::default()),
         RuleEnum::UnicornThrowNewError(UnicornThrowNewError::default()),
         RuleEnum::JsxA11YAltText(JsxA11YAltText::default()),

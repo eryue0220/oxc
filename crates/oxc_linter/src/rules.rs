@@ -366,6 +366,7 @@ pub(crate) mod jest {
     pub mod prefer_lowercase_title;
     pub mod prefer_mock_promise_shorthand;
     pub mod prefer_mock_return_shorthand;
+    pub mod prefer_snapshot_hint;
     pub mod prefer_spy_on;
     pub mod prefer_strict_equal;
     pub mod prefer_to_be;
@@ -572,6 +573,7 @@ pub(crate) mod unicorn {
     pub mod require_number_to_fixed_digits_argument;
     pub mod require_post_message_target_origin;
     pub mod switch_case_braces;
+    pub mod switch_case_break_position;
     pub mod text_encoding_identifier_case;
     pub mod throw_new_error;
 }
