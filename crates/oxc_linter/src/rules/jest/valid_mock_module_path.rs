@@ -114,6 +114,26 @@ impl Rule for ValidMockModulePath {
     }
 }
 
+fn jest_mock_resolver() -> &'static Resolver {
+    static RESOLVER: OnceLock<Resolver> = OnceLock::new();
+    RESOLVER.get_or_init(|| {
+        Resolver::new(ResolveOptions {
+            builtin_modules: true,
+            condition_names: vec![
+                "node".into(),
+                "require".into(),
+                "import".into(),
+                "default".into(),
+            ],
+            ..ResolveOptions::default()
+        })
+    })
+}
+
+fn is_expected_resolve_failure(err: &ResolveError) -> bool {
+    matches!(err, ResolveError::NotFound(_) | ResolveError::PackagePathNotExported { .. })
+}
+
 impl ValidMockModulePath {
     fn run<'a>(&self, possible_jest_node: &PossibleJestNode<'a, '_>, ctx: &LintContext<'a>) {
         let node = possible_jest_node.node;
@@ -155,9 +175,9 @@ impl ValidMockModulePath {
         };
 
         if !module_name.starts_with('.') {
-            match self.jest_mock_resolver().resolve_file(ctx.file_path(), module_name) {
+            match jest_mock_resolver().resolve_file(ctx.file_path(), module_name) {
                 Ok(_) | Err(ResolveError::Builtin { .. }) => {}
-                Err(ref e) if self.is_expected_resolve_failure(e) => {
+                Err(ref e) if is_expected_resolve_failure(e) => {
                     ctx.diagnostic(invalid_mock_module_path(arg_span, ctx));
                 }
                 Err(e) => {
@@ -186,26 +206,6 @@ impl ValidMockModulePath {
         if !found {
             ctx.diagnostic(invalid_mock_module_path(arg_span, ctx));
         }
-    }
-
-    fn jest_mock_resolver(&self) -> &'static Resolver {
-        static RESOLVER: OnceLock<Resolver> = OnceLock::new();
-        RESOLVER.get_or_init(|| {
-            Resolver::new(ResolveOptions {
-                builtin_modules: true,
-                condition_names: vec![
-                    "node".into(),
-                    "require".into(),
-                    "import".into(),
-                    "default".into(),
-                ],
-                ..ResolveOptions::default()
-            })
-        })
-    }
-
-    fn is_expected_resolve_failure(&self, err: &ResolveError) -> bool {
-        matches!(err, ResolveError::NotFound(_) | ResolveError::PackagePathNotExported { .. })
     }
 }
 
