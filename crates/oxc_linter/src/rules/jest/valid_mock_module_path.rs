@@ -45,13 +45,16 @@ fn normalize_logical_path(path: &Path) -> PathBuf {
     out
 }
 
+#[derive(Debug, Default, Clone, Deserialize)]
+pub struct ValidMockModulePath(Box<ValidMockModulePathConfig>);
+
 #[derive(Debug, Deserialize, Serialize, JsonSchema, Clone)]
 #[serde(rename_all = "camelCase", default)]
-pub struct ValidMockModulePath {
+pub struct ValidMockModulePathConfig {
     pub module_file_extensions: Vec<String>,
 }
 
-impl Default for ValidMockModulePath {
+impl Default for ValidMockModulePathConfig {
     fn default() -> Self {
         Self {
             module_file_extensions: vec![
@@ -97,12 +100,16 @@ declare_oxc_lint!(
     ValidMockModulePath,
     jest,
     style,
-    config = ValidMockModulePath,
+    config = ValidMockModulePathConfig,
 );
 
 impl Rule for ValidMockModulePath {
     fn from_configuration(value: serde_json::Value) -> Result<Self, serde_json::error::Error> {
         serde_json::from_value::<DefaultRuleConfig<Self>>(value).map(DefaultRuleConfig::into_inner)
+    }
+
+    fn to_configuration(&self) -> Option<Result<serde_json::Value, serde_json::Error>> {
+        Some(serde_json::to_value(&*self.0))
     }
 
     fn run_on_jest_node<'a, 'c>(
@@ -193,7 +200,7 @@ impl ValidMockModulePath {
         let resolved = normalize_logical_path(&dir.join(module_name));
 
         let found = std::iter::once(String::new())
-            .chain(self.module_file_extensions.iter().cloned())
+            .chain(self.0.module_file_extensions.iter().cloned())
             .any(|ext| {
                 let path = if ext.is_empty() {
                     resolved.clone()
