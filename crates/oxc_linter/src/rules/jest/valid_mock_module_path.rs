@@ -125,10 +125,6 @@ impl Rule for ValidMockModulePath {
         serde_json::from_value::<DefaultRuleConfig<Self>>(value).map(DefaultRuleConfig::into_inner)
     }
 
-    fn to_configuration(&self) -> Option<Result<serde_json::Value, serde_json::Error>> {
-        Some(serde_json::to_value(std::ops::Deref::deref(self)))
-    }
-
     fn run_on_jest_node<'a, 'c>(
         &self,
         jest_node: &PossibleJestNode<'a, 'c>,
