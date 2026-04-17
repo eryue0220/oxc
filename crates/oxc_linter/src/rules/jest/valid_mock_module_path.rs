@@ -118,6 +118,7 @@ declare_oxc_lint!(
     jest,
     style,
     config = ValidMockModulePathConfig,
+    version = "next",
 );
 
 impl Rule for ValidMockModulePath {
