@@ -8,6 +8,7 @@ use oxc_diagnostics::OxcDiagnostic;
 use oxc_macros::declare_oxc_lint;
 use oxc_resolver::{ResolveError, ResolveOptions, Resolver};
 use oxc_span::Span;
+use oxc_str::CompactStr;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -21,6 +22,14 @@ fn invalid_mock_module_path(span: Span, ctx: &LintContext<'_>) -> OxcDiagnostic 
     let path_text = ctx.source_range(span);
     OxcDiagnostic::warn("Disallow mocking of non-existing module paths")
         .with_help(format!("Module path {path_text} does not exist or is not exported"))
+        .with_label(span)
+}
+
+fn unresolved_mock_module_path_validation_error(span: Span, err: &ResolveError) -> OxcDiagnostic {
+    OxcDiagnostic::warn("Failed to validate mock module path")
+        .with_help(format!(
+            "Unexpected module resolver error: {err}. Please report this issue at https://github.com/oxc-project/oxc/issues/new",
+        ))
         .with_label(span)
 }
 
@@ -48,21 +57,29 @@ fn normalize_logical_path(path: &Path) -> PathBuf {
 #[derive(Debug, Default, Clone, Deserialize)]
 pub struct ValidMockModulePath(Box<ValidMockModulePathConfig>);
 
+impl std::ops::Deref for ValidMockModulePath {
+    type Target = ValidMockModulePathConfig;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
 #[derive(Debug, Deserialize, Serialize, JsonSchema, Clone)]
 #[serde(rename_all = "camelCase", default)]
 pub struct ValidMockModulePathConfig {
-    pub module_file_extensions: Vec<String>,
+    pub module_file_extensions: Vec<CompactStr>,
 }
 
 impl Default for ValidMockModulePathConfig {
     fn default() -> Self {
         Self {
             module_file_extensions: vec![
-                String::from(".js"),
-                String::from(".jsx"),
-                String::from(".ts"),
-                String::from(".tsx"),
-                String::from(".json"),
+                ".js".into(),
+                ".jsx".into(),
+                ".ts".into(),
+                ".tsx".into(),
+                ".json".into(),
             ],
         }
     }
@@ -109,7 +126,7 @@ impl Rule for ValidMockModulePath {
     }
 
     fn to_configuration(&self) -> Option<Result<serde_json::Value, serde_json::Error>> {
-        Some(serde_json::to_value(&*self.0))
+        Some(serde_json::to_value(std::ops::Deref::deref(self)))
     }
 
     fn run_on_jest_node<'a, 'c>(
@@ -188,7 +205,8 @@ impl ValidMockModulePath {
                     ctx.diagnostic(invalid_mock_module_path(arg_span, ctx));
                 }
                 Err(e) => {
-                    panic!("Error when trying to validate mock module path from `jest.mock`: {e}");
+                    ctx.diagnostic(unresolved_mock_module_path_validation_error(arg_span, &e));
+                    return;
                 }
             }
             return;
@@ -199,8 +217,8 @@ impl ValidMockModulePath {
         };
         let resolved = normalize_logical_path(&dir.join(module_name));
 
-        let found = std::iter::once(String::new())
-            .chain(self.0.module_file_extensions.iter().cloned())
+        let found = std::iter::once(CompactStr::new(""))
+            .chain(self.module_file_extensions.iter().cloned())
             .any(|ext| {
                 let path = if ext.is_empty() {
                     resolved.clone()
