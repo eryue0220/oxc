@@ -425,6 +425,18 @@ CLI flags take precedence over this value when both are set.
 Only supported in the root configuration file.
 
 
+### options.respectEslintDisableDirectives
+
+type: `boolean`
+
+
+Whether oxlint should respect `eslint-disable*` and `eslint-enable*`
+directives in addition to its native `oxlint-*` directives.
+
+Defaults to `true`.
+Only supported in the root configuration file.
+
+
 ### options.typeAware
 
 type: `boolean`
@@ -633,6 +645,29 @@ Here's an example if you're using Next.js in a monorepo:
   }
 }
 ```
+
+
+### settings.jest
+
+type: `object`
+
+
+Configure Jest plugin rules.
+
+See [eslint-plugin-jest](https://github.com/jest-community/eslint-plugin-jest)'s
+configuration for a full reference.
+
+
+#### settings.jest.version
+
+type: `integer | string`
+
+default: `null`
+
+Jest version — accepts a number (`29`) or a semver string (`"29.1.0"` or `"v29.1.0"`),
+storing only the major version.
+::: warning
+Using this config will override the `no-deprecated-functions`' config set.
 
 
 ### settings.jsdoc

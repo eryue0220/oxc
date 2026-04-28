@@ -37,26 +37,7 @@ pub use self::{
 // the crates/oxc_linter/data/vitest_compatible_jest_rules.json
 // file is also updated. The JSON file is used by the oxlint-migrate
 // and eslint-plugin-oxlint repos to keep everything synced.
-const VITEST_COMPATIBLE_JEST_RULES: [&str; 47] = [
-    "consistent-test-it",
-    "expect-expect",
-    "max-expects",
-    "max-nested-describe",
-    "no-alias-methods",
-    "no-commented-out-tests",
-    "no-conditional-expect",
-    "no-conditional-in-test",
-    "no-disabled-tests",
-    "no-duplicate-hooks",
-    "no-focused-tests",
-    "no-hooks",
-    "no-identical-title",
-    "no-interpolation-in-snapshots",
-    "no-large-snapshots",
-    "no-mocks-import",
-    "no-restricted-jest-methods",
-    "no-restricted-matchers",
-    "no-standalone-expect",
+const VITEST_COMPATIBLE_JEST_RULES: [&str; 17] = [
     "no-test-prefixes",
     "no-test-return-statement",
     "no-unneeded-async-expect-function",
@@ -70,21 +51,10 @@ const VITEST_COMPATIBLE_JEST_RULES: [&str; 47] = [
     "prefer-lowercase-title",
     "prefer-mock-promise-shorthand",
     "prefer-mock-return-shorthand",
-    "prefer-snapshot-hint",
     "prefer-spy-on",
     "prefer-strict-equal",
     "prefer-to-be",
-    "prefer-to-contain",
     "prefer-to-have-been-called-times",
-    "prefer-to-have-length",
-    "prefer-todo",
-    "require-hook",
-    "require-to-throw-message",
-    "require-top-level-describe",
-    "valid-describe-callback",
-    "valid-expect",
-    "valid-expect-in-promise",
-    "valid-title",
 ];
 
 /// List of Eslint rules that have TypeScript equivalents.

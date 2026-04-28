@@ -948,8 +948,6 @@ fn generate_primitive(primitive_def: &PrimitiveDef, code: &mut String, schema: &
         // Reuse deserializers for zeroed and atomic types
         type_name if type_name.starts_with("NonZero") => return,
         type_name if type_name.starts_with("Atomic") => return,
-        // Skip NodeId - it's handled specially (not transferred)
-        "NodeId" => return,
         type_name => panic!("Cannot generate deserializer for primitive `{type_name}`"),
     };
 
@@ -1490,7 +1488,7 @@ struct Constants {
     deserialized_flag_offset: u32,
     /// Discriminant value for `CommentKind::Line`
     comment_line_kind: u8,
-    /// Size of `RawTransferData` in bytes
+    /// Size of `RawTransferMetadata` in bytes
     raw_metadata_size: u32,
 }
 
